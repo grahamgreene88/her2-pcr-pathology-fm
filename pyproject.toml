@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "h5py>=3.16.0",
+    "openpyxl>=3.1.5",
     "openslide-bin>=4.0.1.2",
     "openslide-python>=1.4.7",
     "pandas>=3.1.0",
