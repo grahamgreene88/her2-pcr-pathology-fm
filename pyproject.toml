@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "conch",
     "h5py>=3.16.0",
     "openpyxl>=3.1.5",
     "openslide-bin>=4.0.1.2",
@@ -36,3 +37,6 @@ dev = [
     "matplotlib>=3.11.2",
     "nbstripout>=0.9.1",
 ]
+
+[tool.uv.sources]
+conch = { git = "https://github.com/Mahmoodlab/CONCH.git" }
