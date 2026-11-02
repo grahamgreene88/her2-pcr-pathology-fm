@@ -1,0 +1,2 @@
+method,auc_mean,auc_sd,auc_patient_avg,ci_low,ci_high,n_patients,n_repeats,encoder,train_cohort,seed
+tile_count,0.41780045351473927,0.0,0.41780045351473927,0.2988465205567109,0.5398839454072012,85,10,lunit_vits16,yale,0
