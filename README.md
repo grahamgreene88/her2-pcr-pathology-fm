@@ -2,7 +2,7 @@
 
 Predicting pathological complete response (pCR) to neoadjuvant anti-HER2 therapy in HER2+ breast cancer from pre-treatment H&E core biopsy whole-slide images, using frozen pathology foundation models and multiple instance learning (MIL).
 
-Inspired Mallya et al. (2025), *Benchmarking histopathology foundation models for ovarian cancer bevacizumab treatment response prediction*. This project uses a similar foundation model + MIL pipeline for HER2+ breast cancer, training on one public cohort and testing on a second cohort from a different hospital.
+Inspired by Mallya et al. (2025), *Benchmarking histopathology foundation models for ovarian cancer bevacizumab treatment response prediction*. This project uses a similar foundation model + MIL pipeline for HER2+ breast cancer, training on one public cohort and testing on a second cohort from a different hospital.
 
 **Status:** work in progress. Tiling, feature extraction (Lunit-DINO), evaluation harness and baseline models are done. MIL models are next.
 
