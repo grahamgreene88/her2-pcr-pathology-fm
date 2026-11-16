@@ -1,0 +1,2 @@
+method,auc_seed_mean,auc_seed_sd,auc_ensemble,ci_low,ci_high,n_patients,n_pos,n_seeds,encoder,train_cohort,test_cohort,seed
+abmil,0.599122807017544,0.020082260041128216,0.5997807017543859,0.44879329909221216,0.7502972972972971,62,38,5,lunit_vits16,yale,impress,0
