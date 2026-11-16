@@ -127,6 +127,55 @@ def run(
     return oof, summary
 
 
+def run_external(
+    method,
+    train_cohort="yale",
+    test_cohort="impress",
+    encoder="lunit_vits16",
+    n_seeds=5,
+    seed=0,
+    out_root=Path("results/external"),
+):
+    """Train on all of train_cohort, predict test_cohort. Run once per fixed configuration."""
+    from her2_pcr_pathology_fm.models import METHODS
+
+    _, y_tr, b_tr = load_bags(train_cohort, encoder)
+    ids_te, y_te, b_te = load_bags(test_cohort, encoder)
+
+    seed_probs = np.stack(
+        [METHODS[method](b_tr, y_tr, b_te, seed=seed + k) for k in range(n_seeds)]
+    )
+    per_seed_auc = np.array([roc_auc_score(y_te, p) for p in seed_probs])
+    mean_probs = seed_probs.mean(axis=0)
+    lo, hi = bootstrap_auc(y_te, mean_probs, seed=seed)
+
+    out = out_root / encoder / f"{train_cohort}_to_{test_cohort}"
+    out.mkdir(parents=True, exist_ok=True)
+    preds = pd.DataFrame({"patient_id": ids_te, "label": y_te, "score": mean_probs})
+    for k, p in enumerate(seed_probs):
+        preds[f"score_seed{k}"] = p
+    preds.to_csv(out / f"{method}_preds.csv", index=False)
+
+    summary = {
+        "method": method,
+        "auc_seed_mean": per_seed_auc.mean(),
+        "auc_seed_sd": per_seed_auc.std(),
+        "auc_ensemble": roc_auc_score(y_te, mean_probs),
+        "ci_low": lo,
+        "ci_high": hi,
+        "n_patients": len(y_te),
+        "n_pos": int(y_te.sum()),
+        "n_seeds": n_seeds,
+        "encoder": encoder,
+        "train_cohort": train_cohort,
+        "test_cohort": test_cohort,
+        "seed": seed,
+    }
+    pd.DataFrame([summary]).to_csv(out / f"{method}_summary.csv", index=False)
+    print(summary)
+    return preds, summary
+
+
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--method", required=True)
@@ -134,5 +183,14 @@ if __name__ == "__main__":
     p.add_argument("--encoder", default="lunit_vits16")
     p.add_argument("--n-repeats", type=int, default=10)
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument(
+        "--external",
+        action="store_true",
+        help="train on all of train-cohort, test on IMPRESS",
+    )
+    p.add_argument("--n-seeds", type=int, default=5)
     a = p.parse_args()
-    run(a.method, a.train_cohort, a.encoder, a.n_repeats, a.seed)
+    if a.external:
+        run_external(a.method, a.train_cohort, "impress", a.encoder, a.n_seeds, a.seed)
+    else:
+        run(a.method, a.train_cohort, a.encoder, a.n_repeats, a.seed)
